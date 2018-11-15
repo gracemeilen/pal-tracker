@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -24,7 +25,12 @@ public class TimeEntryController {
 
     @GetMapping("/time-entries/{timeEntry}")
     public ResponseEntity<TimeEntry> read(@PathVariable("timeEntry") Long timeEntry) {
-        TimeEntry timeEntry1 = timeEntryRepository.find(timeEntry);
+        TimeEntry timeEntry1 = null;
+        try {
+            timeEntry1 = timeEntryRepository.find(timeEntry);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         if (timeEntry1 == null) {
             return new ResponseEntity(
                     HttpStatus.NOT_FOUND

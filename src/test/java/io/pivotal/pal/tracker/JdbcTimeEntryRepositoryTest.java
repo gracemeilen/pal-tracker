@@ -1,4 +1,4 @@
-package test.pivotal.pal.tracker;
+package io.pivotal.pal.tracker;
 
 
 import com.mysql.cj.jdbc.MysqlDataSource;
@@ -7,6 +7,7 @@ import io.pivotal.pal.tracker.TimeEntry;
 import io.pivotal.pal.tracker.TimeEntryRepository;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.Date;
@@ -16,7 +17,6 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 public class JdbcTimeEntryRepositoryTest {
     private TimeEntryRepository subject;
     private JdbcTemplate jdbcTemplate;
