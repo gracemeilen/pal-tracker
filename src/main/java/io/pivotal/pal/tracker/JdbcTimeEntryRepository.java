@@ -45,6 +45,9 @@ public class JdbcTimeEntryRepository implements TimeEntryRepository {
     @Override
     public TimeEntry find(long timeEntryId) {
         List<TimeEntry> all = list();
+        if(all == null){
+            return null;
+        }
         for (TimeEntry timeEntry : all){
             if (timeEntry.getId() == timeEntryId){
                 return timeEntry;
