@@ -44,16 +44,20 @@ public class JdbcTimeEntryRepository implements TimeEntryRepository {
 
     @Override
     public TimeEntry find(long timeEntryId) {
-        List<TimeEntry> all = list();
-        if(all == null){
+        TimeEntryMapper mapper = new TimeEntryMapper();
+        try {
+            Connection connection = jdbcTemplate.getDataSource().getConnection();
+            PreparedStatement find = connection.prepareStatement("SELECT * FROM time_entries");
+            ResultSet resultSet = find.executeQuery();
+            List<TimeEntry> entries = new ArrayList<>();
+
+            while (resultSet.next()) {
+                entries.add(mapper.mapRow(resultSet, 1));
+            }
+            return entries.get(0);
+        } catch (Exception e) {
             return null;
         }
-        for (TimeEntry timeEntry : all){
-            if (timeEntry.getId() == timeEntryId){
-                return timeEntry;
-            }
-        }
-        return null;
     }
 
     @Override
