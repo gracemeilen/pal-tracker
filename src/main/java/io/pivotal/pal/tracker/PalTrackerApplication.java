@@ -16,6 +16,7 @@ import javax.sql.DataSource;
 
 @SpringBootApplication
 public class PalTrackerApplication {
+
     @Bean
     public TimeEntryRepository timeEntryRepository(DataSource dataSource) {
         return new JdbcTimeEntryRepository(dataSource);
