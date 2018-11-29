@@ -24,6 +24,7 @@ public class JdbcTimeEntryRepository implements TimeEntryRepository {
     @Override
     public TimeEntry create(TimeEntry timeEntry) {
         KeyHolder generatedKeyHolder = new GeneratedKeyHolder();
+
         jdbcTemplate.update(connection -> {
             PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO time_entries (project_id, user_id, date, hours) " +
@@ -39,25 +40,17 @@ public class JdbcTimeEntryRepository implements TimeEntryRepository {
             return statement;
         }, generatedKeyHolder);
 
-            return find(generatedKeyHolder.getKey().longValue());
+        return find(generatedKeyHolder.getKey().longValue());
     }
+
 
     @Override
     public TimeEntry find(long timeEntryId) {
-        TimeEntryMapper mapper = new TimeEntryMapper();
-        try {
-            Connection connection = jdbcTemplate.getDataSource().getConnection();
-            PreparedStatement find = connection.prepareStatement("SELECT * FROM time_entries");
-            ResultSet resultSet = find.executeQuery();
-            List<TimeEntry> entries = new ArrayList<>();
-
-            while (resultSet.next()) {
-                entries.add(mapper.mapRow(resultSet, 1));
-            }
-            return entries.get(0);
-        } catch (Exception e) {
-            return null;
-        }
+        List<TimeEntry> query = jdbcTemplate.query(
+                "SELECT id, project_id, user_id, date, hours FROM time_entries WHERE id = ?",
+                new Object[]{timeEntryId},
+                new TimeEntryMapper());
+        return query.size() == 0 ? null : query.get(0);
     }
 
     @Override

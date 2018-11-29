@@ -1,5 +1,8 @@
 package io.pivotal.pal.tracker;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.DistributionSummary;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,13 +13,20 @@ import java.util.List;
 @RestController
 public class TimeEntryController {
     private TimeEntryRepository timeEntryRepository;
+    private final DistributionSummary timeEntrySummary;
+    private final Counter counter;
 
-    public TimeEntryController(TimeEntryRepository timeEntryRepository) {
+    public TimeEntryController(TimeEntryRepository timeEntryRepository,
+                               MeterRegistry registry) {
         this.timeEntryRepository = timeEntryRepository;
+        this.counter  = registry.counter("timeEntry.actionCounter");
+        this.timeEntrySummary = registry.summary("timeEntry.summary");
     }
 
     @PostMapping("/time-entries")
     public ResponseEntity<TimeEntry> create(@RequestBody TimeEntry timeEntry) {
+        counter.increment();
+        timeEntrySummary.record(timeEntryRepository.list().size());
         return new ResponseEntity(
                 timeEntryRepository.create(timeEntry),
                 HttpStatus.CREATED
@@ -35,13 +45,15 @@ public class TimeEntryController {
             return new ResponseEntity(
                     HttpStatus.NOT_FOUND
             );
-        } else{
+        } else {
+            counter.increment();
             return new ResponseEntity(
                     timeEntry1,
                     HttpStatus.OK
             );
         }
     }
+
     @GetMapping("/time-entries")
     public ResponseEntity<List<TimeEntry>> list() {
         List<TimeEntry> timeEntry1 = timeEntryRepository.list();
@@ -49,7 +61,8 @@ public class TimeEntryController {
             return new ResponseEntity(
                     HttpStatus.NOT_FOUND
             );
-        } else{
+        } else {
+            counter.increment();
             return new ResponseEntity(
                     timeEntry1,
                     HttpStatus.OK
@@ -65,7 +78,8 @@ public class TimeEntryController {
             return new ResponseEntity(
                     HttpStatus.NOT_FOUND
             );
-        } else{
+        } else {
+            counter.increment();
             return new ResponseEntity(
                     timeEntry1,
                     HttpStatus.OK
@@ -75,7 +89,8 @@ public class TimeEntryController {
 
     @RequestMapping(value = "/time-entries/{timeEntry}", method = RequestMethod.DELETE)
     public ResponseEntity<TimeEntry> delete(@PathVariable("timeEntry") long timeEntryId) {
-                timeEntryRepository.delete(timeEntryId);
+        timeEntryRepository.delete(timeEntryId);
+        counter.increment();
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -1,1 +1,2 @@
 WELCOME_MESSAGE: "hello"
+SPRING_DATASOURCE_URL: "jdbc:mysql://localhost:3306/tracker_test?user=tracker&useSSL=false&useTimezone=true&serverTimezone=UTC&useLegacyDatetimeCode=false"
