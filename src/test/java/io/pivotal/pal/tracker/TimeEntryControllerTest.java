@@ -1,10 +1,8 @@
 package io.pivotal.pal.tracker;
 
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.DistributionSummary;
-import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -20,16 +18,14 @@ import static org.mockito.Mockito.*;
 public class TimeEntryControllerTest {
     private TimeEntryRepository timeEntryRepository;
     private TimeEntryController controller;
-    private MeterRegistry registry;
+    private CounterService counter;
 
     @Before
     public void setUp() throws Exception {
 
-        registry = mock(MeterRegistry.class);
-        when(registry.counter(anyString())).thenReturn(mock(Counter.class));
-        when(registry.summary(anyString())).thenReturn(mock(DistributionSummary.class));
+        counter = mock(CounterService.class);
         timeEntryRepository = mock(TimeEntryRepository.class);
-        controller = new TimeEntryController(timeEntryRepository,registry);
+        controller = new TimeEntryController(timeEntryRepository, counter);
     }
 
     @Test
