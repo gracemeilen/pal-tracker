@@ -10,6 +10,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -67,7 +68,7 @@ public class JdbcTimeEntryRepository implements TimeEntryRepository {
             }
             return entries;
         } catch (Exception e) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
